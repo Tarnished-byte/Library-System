@@ -12,15 +12,23 @@ import BookDetails from './pages/BookDetails';
 import ReadingRoom from './pages/ReadingRoom';
 import Dashboard from './pages/Dashboard';
 import Membership from './pages/Membership';
+import LibrarianDashboard from './pages/LibrarianDashboard';
 
 export default function App() {
   // Global State for Custom Router
+  const [user] = useState({ name: 'Sougat', role: 'librarian' }); // Change to 'member' to test restrictions
   const [currentView, setCurrentView] = useState('home');
   const [selectedBook, setSelectedBook] = useState(null);
   const [showSearchOverlay, setShowSearchOverlay] = useState(false);
 
   // Router Engine
   const navigateTo = (view, data = null) => {
+    // Role-based security check
+    if (view === 'librarian-dashboard' && user.role !== 'librarian') {
+      alert("Access Denied: Only librarians can access this portal.");
+      return;
+    }
+    
     setCurrentView(view);
     if (data) setSelectedBook(data);
     setShowSearchOverlay(false);
@@ -30,9 +38,10 @@ export default function App() {
   return (
     <>
       <Navbar 
+        user={user}
         currentView={currentView} 
         navigateTo={navigateTo} 
-        setShowSearchOverlay={setShowSearchOverlay} 
+        setShowSearchOverlay={setShowSearchOverlay}
       />
       
       {showSearchOverlay && (
@@ -49,6 +58,7 @@ export default function App() {
         {currentView === 'reading-room' && <ReadingRoom />}
         {currentView === 'dashboard' && <Dashboard />}
         {currentView === 'membership' && <Membership />}
+        {currentView === 'librarian-dashboard' && <LibrarianDashboard />}
       </main>
 
       <Footer />
