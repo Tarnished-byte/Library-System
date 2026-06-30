@@ -26,7 +26,7 @@ export default function Navbar({ user, currentView, navigateTo, setShowSearchOve
             <span 
               key={route} 
               className={`nav-link ${currentView === route ? 'active' : ''}`} 
-              onClick={() => navigateTo(route)}
+              onClick={() => {console.log(route); navigateTo(route);}}
               style={{ 
                 cursor: 'pointer', 
                 fontWeight: currentView === route ? '700' : '500',

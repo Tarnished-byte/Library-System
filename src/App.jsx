@@ -21,6 +21,11 @@ export default function App() {
   const [selectedBook, setSelectedBook] = useState(null);
   const [showSearchOverlay, setShowSearchOverlay] = useState(false);
 
+  // The librarian dashboard ships its own sidebar/topbar (see Sidebar/Topbar in
+  // LibrarianDashboard.jsx), so the public site chrome would just be a second,
+  // redundant nav stacked on top of it. Hide both when this view is active.
+  const isLibrarianView = currentView === 'librarian-dashboard';
+
   // Router Engine
   const navigateTo = (view, data = null) => {
     // Role-based security check
@@ -28,7 +33,7 @@ export default function App() {
       alert("Access Denied: Only librarians can access this portal.");
       return;
     }
-    
+
     setCurrentView(view);
     if (data) setSelectedBook(data);
     setShowSearchOverlay(false);
@@ -37,21 +42,23 @@ export default function App() {
 
   return (
     <>
-      <Navbar 
-        user={user}
-        currentView={currentView} 
-        navigateTo={navigateTo} 
-        setShowSearchOverlay={setShowSearchOverlay}
-      />
-      
-      {showSearchOverlay && (
-        <SearchOverlay 
-          setShowSearchOverlay={setShowSearchOverlay} 
-          navigateTo={navigateTo} 
+      {!isLibrarianView && (
+        <Navbar
+          user={user}
+          currentView={currentView}
+          navigateTo={navigateTo}
+          setShowSearchOverlay={setShowSearchOverlay}
         />
       )}
-      
-      <main style={{ minHeight: '80vh' }}>
+
+      {showSearchOverlay && (
+        <SearchOverlay
+          setShowSearchOverlay={setShowSearchOverlay}
+          navigateTo={navigateTo}
+        />
+      )}
+
+      <main style={{ minHeight: isLibrarianView ? '100vh' : '80vh' }}>
         {currentView === 'home' && <Home navigateTo={navigateTo} />}
         {currentView === 'books' && <Books navigateTo={navigateTo} />}
         {currentView === 'book-details' && <BookDetails selectedBook={selectedBook} navigateTo={navigateTo} />}
@@ -61,7 +68,7 @@ export default function App() {
         {currentView === 'librarian-dashboard' && <LibrarianDashboard />}
       </main>
 
-      <Footer />
+      {!isLibrarianView && <Footer />}
     </>
   );
 }
